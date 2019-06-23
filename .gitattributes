@@ -1,1 +1,3 @@
-*.swift linguist-language=golang
+*.c linguist-language=golang
+*.h linguist-language=golang
+*.go linguist-language=golang
