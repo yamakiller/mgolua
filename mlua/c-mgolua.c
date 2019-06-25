@@ -134,6 +134,11 @@ void mlua_pushlgostruct(lua_State *L, uintptr_t p) {
 	lua_pushlightuserdata(L, (void*)p);
 }
 
+void mlua_pushliteral(lua_State *L, char *s) {
+	//lua_pushstring(L, ""s);
+	lua_pushstring(L, "" s);
+}
+
 unsigned int mlua_isgostruct(lua_State *L, int idx) {
 	if (lua_isuserdata(L, idx) != 0) {
 		unsigned int* iidptr = lua_touserdata(L, idx);

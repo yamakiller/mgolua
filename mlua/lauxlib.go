@@ -7,8 +7,8 @@ package mlua
 //#include "mgolua.h"
 import "C"
 import (
-	"unsafe"
 	"fmt"
+	"unsafe"
 )
 
 type LuaError struct {
@@ -23,19 +23,19 @@ type LuaReg struct {
 }
 
 type LuaDebug struct {
-	Event int
-	Name string
-	NameWhat string
-	What string
-	Source string
-	CurrentLine int
-	LineDefined int
+	Event           int
+	Name            string
+	NameWhat        string
+	What            string
+	Source          string
+	CurrentLine     int
+	LineDefined     int
 	LastLineDefined int
-	Nups uint8
-	NParams uint8
-	IsVararg byte
-	IsTailCall byte
-	ShortSrc []byte
+	Nups            uint8
+	NParams         uint8
+	IsVararg        byte
+	IsTailCall      byte
+	ShortSrc        []byte
 }
 
 type LuaBuffer = C.luaL_Buffer
@@ -116,6 +116,11 @@ func (L *State) CallMeta(obj int, e string) int {
 // Returns true if the value at index is light user data
 func (L *State) IsLightUserdata(index int) bool {
 	return LuaValType(C.lua_type(L._s, C.int(index))) == LUA_TLIGHTUSERDATA
+}
+
+// lua_isboolean
+func (L *State) IsBoolean(index int) bool {
+	return LuaValType(C.lua_type(L._s, C.int(index))) == LUA_TBOOLEAN
 }
 
 // lua_isnil
@@ -309,14 +314,14 @@ func (L *State) OptString(narg int, d string) string {
 
 // luaL_setfuncs
 func (L *State) SetFuncs(regs []LuaReg, nup int) {
-  L.CheckStack(nup + 1, "too many upvalues")
+	L.CheckStack(nup+1, "too many upvalues")
 	for _, r := range regs {
 		C.lua_pushlightuserdata(L._s, unsafe.Pointer(&r.Func))
-		for i := 0;i < nup;i++ {
+		for i := 0; i < nup; i++ {
 			L.PushValue(-(nup + 1))
 		}
 
-		C.mlua_push_fun_wrapper(L._s, C.int(nup + 1))
+		C.mlua_push_fun_wrapper(L._s, C.int(nup+1))
 		fmt.Println(L.Type(-(nup + 2)))
 		L.SetField(-(nup + 2), r.Name)
 	}

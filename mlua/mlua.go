@@ -16,11 +16,11 @@ package mlua
 */
 import "C"
 import (
-	"fmt"
-	"unsafe"
-	"reflect"
 	"bytes"
 	"encoding/gob"
+	"fmt"
+	"reflect"
+	"unsafe"
 )
 
 type LuaStackEntry struct {
@@ -141,11 +141,11 @@ func (L *State) PushGoFunction(f LuaGoFunction) {
 
 // lua_pushcclosure -> PushGoClosure
 func (L *State) PushGoClosure(f LuaGoFunction, args ...interface{}) {
-  var argsNum int = 1
+	var argsNum int = 1
 	C.lua_pushlightuserdata(L._s, unsafe.Pointer(&f))
 	for _, val := range args {
 		argsNum += 1
-		switch(reflect.TypeOf(val).Kind()) {
+		switch reflect.TypeOf(val).Kind() {
 		case reflect.Uint64:
 		case reflect.Uint32:
 		case reflect.Uint:
@@ -153,30 +153,37 @@ func (L *State) PushGoClosure(f LuaGoFunction, args ...interface{}) {
 		case reflect.Int32:
 		case reflect.Int:
 			L.PushInteger(reflect.ValueOf(val).Int())
-			break;
+			break
 		case reflect.Float64:
 		case reflect.Float32:
 			L.PushNumber(reflect.ValueOf(val).Float())
-			break;
+			break
 		case reflect.String:
 			L.PushString(reflect.ValueOf(val).String())
-			break;
+			break
 		case reflect.Struct:
 			L.PushUserGoStruct(val)
-			break;
+			break
 		case reflect.Uintptr:
 		case reflect.UnsafePointer:
 			L.PushLightGoStruct(unsafe.Pointer(reflect.ValueOf(val).Pointer()))
-		  break;
+			break
 		case reflect.Bool:
 			L.PushBoolean(reflect.ValueOf(val).Bool())
-			break;
+			break
 		default:
 			panic(fmt.Sprintf("mlua go Closure %s Type not supported", reflect.TypeOf(val).Name()))
-			break;
+			break
 		}
 	}
 	C.mlua_push_fun_wrapper(L._s, C.int(argsNum))
+}
+
+// mlua_pushliteral
+func (L *State) PushLiteral(s string) {
+	Cs := C.CString(s)
+	defer C.free(unsafe.Pointer(Cs))
+	C.mlua_pushliteral(L._s, Cs)
 }
 
 //----------------------------------------------------//
@@ -197,7 +204,7 @@ func (L *State) PushUserGoStruct(d interface{}) {
 	var dby bytes.Buffer
 	enc := gob.NewEncoder(&dby)
 	err := enc.Encode(d)
-	if (err != nil){
+	if err != nil {
 		panic(err)
 		return
 	}
@@ -253,13 +260,13 @@ func (L *State) ToNumber(index int) float64 {
 // 获取索引中的Go Struct 结构
 // TODO： 思考感觉性能消耗不小!  没有没改进方案呢？
 //----------------------------------------------
-func (L *State) ToUserGoStruct(index int, s interface{}){
+func (L *State) ToUserGoStruct(index int, s interface{}) {
 	r := (*C.struct_GoStruct)(C.mlua_tougostruct(L._s, C.int(index)))
 	n := int(r._sz)
 	d := bytes.NewBuffer(C.GoBytes(unsafe.Pointer(&r._data[0]), C.int(n)))
 	dec := gob.NewDecoder(d)
 	err := dec.Decode(s)
-	if (err != nil) {
+	if err != nil {
 		panic(err)
 	}
 }
