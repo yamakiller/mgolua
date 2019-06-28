@@ -255,6 +255,11 @@ func (L *State) ToNumber(index int) float64 {
 	return float64(C.mlua_tonumber(L._s, C.int(index)))
 }
 
+// lua_toboolean
+func (L *State) ToBoolean(index int) bool {
+	return int(C.lua_toboolean(L._s, C.int(index))) != 0
+}
+
 //----------------------------------------------
 // lua_tougostruct => lua_touserdata
 // 获取索引中的Go Struct 结构
@@ -435,6 +440,11 @@ func (L *State) call_ex(nargs int, nresults int, catch bool) (err error) {
 // lua_call
 func (L *State) Call(nargs, nresults int) (err error) {
 	return L.call_ex(nargs, nresults, true)
+}
+
+// lua_pcall Extern
+func (L *State) PCall(nargs, nresults, errfunc int) int {
+	return L.pcall(nargs, nresults, errfunc)
 }
 
 // Registers a Go function as a global variable
