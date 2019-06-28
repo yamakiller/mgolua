@@ -11,7 +11,6 @@
 
 static const char go_state_registry_key = 'k';
 struct GoStruct{
-	unsigned int _fakeId;
 	size_t _sz;
   char _data[1];
 };
@@ -125,7 +124,6 @@ void mlua_pushglobaltable(lua_State *L) {
 
 void mlua_pushugostruct(lua_State *L, char *godata, size_t sz) {
 	struct GoStruct *pGoData = (struct GoStruct*)lua_newuserdata(L, sizeof(struct GoStruct) + sz);
-	pGoData->_fakeId = 0;
 	pGoData->_sz = sz;
 	memcpy(&pGoData->_data[0], (void*)godata, sz);
 }
@@ -134,9 +132,8 @@ void mlua_pushlgostruct(lua_State *L, uintptr_t p) {
 	lua_pushlightuserdata(L, (void*)p);
 }
 
-void mlua_pushliteral(lua_State *L, char *s) {
-	//lua_pushstring(L, ""s);
-	lua_pushstring(L, "" s);
+void mlua_pushliteral(lua_State *L, const char *s) {
+	lua_pushstring(L, s);
 }
 
 unsigned int mlua_isgostruct(lua_State *L, int idx) {

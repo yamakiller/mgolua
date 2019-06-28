@@ -55,7 +55,7 @@ void mlua_pushugostruct(lua_State *L, char *goStruct, size_t sz);
 
 void mlua_pushlgostruct(lua_State *L, uintptr_t p);
 
-void mlua_pushliteral(lua_State *L, char *s);
+void mlua_pushliteral(lua_State *L, const char *s);
 
 unsigned int mlua_isgostruct(lua_State *, int idx);
 
