@@ -1,11 +1,11 @@
 package mlua
 
 import (
-  "fmt"
+	"fmt"
 )
 
+// LuaTest : lua测试
 type LuaTest struct {
-
 }
 
 func test3(L *State) int {
@@ -24,48 +24,51 @@ type act struct {
 	C int
 }
 
-func (T *LuaTest) TestGOStruct_UserData() {
-  L := NewState()
-  L.OpenLibs()
-  defer L.Close()
+// TestGOStructUserData : 测试UserData
+func (T *LuaTest) TestGOStructUserData() {
+	L := NewState()
+	L.OpenLibs()
+	defer L.Close()
 
-  //结构及 函数注册测试完成---------------------------
-  td := &act{1, 2, 3}
+	//结构及 函数注册测试完成---------------------------
+	td := &act{1, 2, 3}
 
-  L.PushUserGoStruct(td)
+	L.PushUserGoStruct(td)
 
-  var bbb act
-  L.ToUserGoStruct(-1, &bbb)
+	var bbb act
+	L.ToUserGoStruct(-1, &bbb)
 
-  fmt.Print( td.A, bbb.A)
+	fmt.Print(td.A, bbb.A)
 
 }
 
-func (T* LuaTest) TestRegisterFunc() {
-  L := NewState()
-  L.OpenLibs()
-  defer L.Close()
+// TestRegisterFunc 测试注册函数
+func (T *LuaTest) TestRegisterFunc() {
+	L := NewState()
+	L.OpenLibs()
+	defer L.Close()
 
-  L.Register("test2", test2)
-  L.Register("test3", test3)
+	L.Register("test2", test2)
+	L.Register("test3", test3)
 
-  L.DoString("test2() test3()")
+	L.DoString("test2() test3()")
 }
 
-func (T* LuaTest) TestLuaReg() {
-  L := NewState()
-  L.OpenLibs()
-  defer L.Close()
+// TestLuaReg : 测试LuaReg
+func (T *LuaTest) TestLuaReg() {
+	L := NewState()
+	L.OpenLibs()
+	defer L.Close()
 
-  af := make([]LuaReg, 1, 1)
-  af[0].Name = "test2"
-  af[0].Func = test2
+	af := make([]LuaReg, 1, 1)
+	af[0].Name = "test2"
+	af[0].Func = test2
 
-  L.NewTable()
+	L.NewTable()
 
-  L.SetFuncs(af, 0)
+	L.SetFuncs(af, 0)
 
-  L.SetGlobal("mm")
+	L.SetGlobal("mm")
 
-  L.DoString("print('ooooo') mm.test2()")
+	L.DoString("print('ooooo') mm.test2()")
 }
