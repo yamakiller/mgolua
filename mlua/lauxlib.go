@@ -146,7 +146,14 @@ func (L *State) IsNumber(index int) bool { return C.lua_isnumber(L._s, C.int(ind
 func (L *State) IsString(index int) bool { return C.lua_isstring(L._s, C.int(index)) == 1 }
 
 // IsGFunction : lua_iscfunction -> LuaGFunction
-func (L *State) IsGFunction(index int) bool { return C.lua_iscfunction(L._s, C.int(index)) == 1 }
+func (L *State) IsGFunction(index int) bool {
+	return C.lua_iscfunction(L._s, C.int(index)) == 1
+}
+
+// IsFunction : lua_function -> IsFunction
+func (L *State) IsFunction(index int) bool {
+	return LuaValType(C.lua_type(L._s, C.int(index))) == LUATFUNCTION
+}
 
 // IsTable : lua_istable
 func (L *State) IsTable(index int) bool {

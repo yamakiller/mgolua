@@ -147,20 +147,27 @@ func (L *State) PushGoClosure(f LuaGoFunction, args ...interface{}) {
 	argsNum := 1
 	pf := unsafe.Pointer(&f)
 	C.lua_pushlightuserdata(L._s, pf)
+
 	for _, val := range args {
 		argsNum++
 		switch reflect.TypeOf(val).Kind() {
 		case reflect.Uint64:
+			L.PushInteger(int64(val.(uint64)))
 		case reflect.Uint32:
+			L.PushInteger(int64(val.(uint32)))
 		case reflect.Uint:
+			L.PushInteger(int64(val.(uint)))
 		case reflect.Int64:
+			L.PushInteger(val.(int64))
 		case reflect.Int32:
+			L.PushInteger(int64(val.(int32)))
 		case reflect.Int:
-			L.PushInteger(reflect.ValueOf(val).Int())
+			L.PushInteger(int64(val.(int)))
 			break
 		case reflect.Float64:
+			L.PushNumber(val.(float64))
 		case reflect.Float32:
-			L.PushNumber(reflect.ValueOf(val).Float())
+			L.PushNumber(float64(val.(float32)))
 			break
 		case reflect.String:
 			L.PushString(reflect.ValueOf(val).String())
@@ -169,6 +176,7 @@ func (L *State) PushGoClosure(f LuaGoFunction, args ...interface{}) {
 			L.PushUserGoStruct(val)
 			break
 		case reflect.Uintptr:
+			L.PushLightGoStruct(unsafe.Pointer(val.(uintptr)))
 		case reflect.UnsafePointer:
 			L.PushLightGoStruct(unsafe.Pointer(reflect.ValueOf(val).Pointer()))
 			break
@@ -242,8 +250,8 @@ func (L *State) ToBytes(index int) []byte {
 }
 
 // ToInteger : ua_tointeger
-func (L *State) ToInteger(index int) int {
-	return int(C.mlua_tointeger(L._s, C.int(index)))
+func (L *State) ToInteger(index int) int64 {
+	return int64(C.mlua_tointeger(L._s, C.int(index)))
 }
 
 // ToNumber : lua_tonumber
@@ -254,6 +262,18 @@ func (L *State) ToNumber(index int) float64 {
 // ToBoolean : lua_toboolean
 func (L *State) ToBoolean(index int) bool {
 	return int(C.lua_toboolean(L._s, C.int(index))) != 0
+}
+
+//ToCheckString : luaL_checklstring
+func (L *State) ToCheckString(index int) string {
+	var size C.size_t
+	r := C.luaL_checklstring(L._s, C.int(index), &size)
+	return C.GoStringN(r, C.int(size))
+}
+
+// ToCheckInteger : luaL_checkinteger
+func (L *State) ToCheckInteger(index int) int64 {
+	return int64(C.luaL_checkinteger(L._s, C.int(index)))
 }
 
 // ToUserGoStruct lua_tougostruct => lua_touserdata
