@@ -147,7 +147,6 @@ func (L *State) PushGoClosure(f LuaGoFunction, args ...interface{}) {
 	argsNum := 1
 	pf := unsafe.Pointer(&f)
 	C.lua_pushlightuserdata(L._s, pf)
-
 	for _, val := range args {
 		argsNum++
 		switch reflect.TypeOf(val).Kind() {
@@ -197,7 +196,7 @@ func (L *State) PushLiteral(s string) {
 	C.mlua_pushliteral(L._s, Cs)
 }
 
-// UpvalueIndex : 保闭包参数从第二个位置开始防蚊
+// UpvalueIndex : 闭包参数从第二个位置开始防蚊
 func (L *State) UpvalueIndex(n int) int {
 	return int(C.mlua_upvalueindex(C.int(n)))
 }
