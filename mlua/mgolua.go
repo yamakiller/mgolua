@@ -1,7 +1,7 @@
 package mlua
 
 /*
-#cgo CFLAGS: -I ${SRCDIR}/lua
+#cgo CFLAGS: -I ${SRCDIR}
 
 #include <lua.h>
 #include <lualib.h>
