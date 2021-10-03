@@ -1,7 +1,7 @@
 package mlua
 
 /*
-#cgo CFLAGS: -I ${SRCDIR}/lua
+#cgo CFLAGS: -I ${SRCDIR}
 #cgo llua LDFLAGS: -llua
 #cgo luaa LDFLAGS: -llua -lm -ldl
 #cgo linux,!llua,!luaa LDFLAGS: -llua
